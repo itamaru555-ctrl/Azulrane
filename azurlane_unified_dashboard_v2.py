@@ -12,26 +12,61 @@ st.set_page_config(
     page_icon="⚓"
 )
 
-# カスタムCSS（ネオンブルー・ダークテーマ）
+# カスタムCSS（高コントラスト・明るい文字色テーマ）
 st.markdown("""
     <style>
+    /* 全体背景とデフォルト文字色 */
     .stApp {
-        background-color: #0b1320;
-        color: #e2e8f0;
+        background-color: #0b1320 !important;
+        color: #ffffff !important;
     }
+    
+    /* ヘッダー・文字全般を明るい白に強制 */
+    h1, h2, h3, h4, h5, h6, p, span, label, div, li, td, th {
+        color: #ffffff !important;
+    }
+
+    /* フォームのラベル・入力欄 */
+    .stNumberInput label, .stSlider label, .stSelectbox label, div[data-widget="stNumberInput"] label {
+        color: #f8fafc !important;
+        font-weight: 600 !important;
+    }
+    
+    div[data-baseweb="input"], input {
+        color: #ffffff !important;
+        background-color: #1a273e !important;
+    }
+
+    /* メトリック (数字・ラベル) */
     div[data-testid="stMetricValue"] {
         color: #38bdf8 !important;
-        font-weight: bold;
+        font-weight: bold !important;
     }
-    .stCard {
-        background-color: #162235;
-        padding: 18px;
-        border-radius: 10px;
-        border: 1px solid #233554;
-        margin-bottom: 12px;
+    div[data-testid="stMetricLabel"] {
+        color: #cbd5e1 !important;
+        font-weight: 600 !important;
     }
-    .stSelectbox, .stNumberInput {
-        background-color: #111b2c;
+
+    /* データフレーム (表) のテキストと背景 */
+    [data-testid="stDataFrame"], div[data-testid="stTable"] {
+        background-color: #162235 !important;
+        color: #ffffff !important;
+    }
+    
+    /* タブのテキスト */
+    .stTabs [data-baseweb="tab"] {
+        color: #cbd5e1 !important;
+        font-size: 1.05rem !important;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #38bdf8 !important;
+        font-weight: bold !important;
+        border-bottom-color: #38bdf8 !important;
+    }
+
+    /* サブヘッダー・キャプション */
+    .stCaption, small {
+        color: #94a3b8 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -48,7 +83,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: イベントショップ交換計画 (コピペいただいたコードの統合)
+# TAB 1: イベントショップ交換計画
 # ==========================================
 with tab1:
     st.header("🛒 イベントショップ交換計画")
@@ -139,9 +174,6 @@ with tab2:
     total_oil = runs * oil_cost_run
     total_time_sec = runs * clear_time_sec
     total_exp = runs * exp_per_run
-    
-    gold_per_oil = gold_per_run / oil_cost_run
-    gold_per_sec = gold_per_run / clear_time_sec
 
     with col_t2_right:
         st.subheader("📊 算定結果")
@@ -163,7 +195,7 @@ with tab2:
         fig = px.line(df_chart, x="周回数", y=["獲得ゴールド", "消費オイル"], 
                       title="リソース累積進行シミュレーション",
                       color_discrete_sequence=["#38bdf8", "#f59e0b"])
-        fig.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#e2e8f0")
+        fig.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#ffffff")
         st.plotly_chart(fig, use_container_width=True)
 
 # ==========================================
@@ -188,9 +220,7 @@ with tab3:
     
     st.success(f"💡 最適解: 最大周回数は **{int(max_possible_runs):,} 回** (ボトルネック要因: **{bottleneck}**)")
     
-    # 無差別曲線・トレードオフグラフ
     x_oil = np.linspace(10, oil_limit, 50)
-    # y (時間) = クリア時間 * 周回数
     y_time_mins = (x_oil / oil_cost_run) * (clear_time_sec / 60)
     
     df_tradeoff = pd.DataFrame({
@@ -201,7 +231,7 @@ with tab3:
                      title="オイル消費 vs 必要時間の限界トレードオフ曲線",
                      color_discrete_sequence=["#10b981"])
     fig_tr.add_vline(x=max_possible_runs * oil_cost_run, line_dash="dash", line_color="#ef4444", annotation_text="最適限界点 (x*)")
-    fig_tr.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#e2e8f0")
+    fig_tr.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#ffffff")
     st.plotly_chart(fig_tr, use_container_width=True)
 
 # ==========================================
@@ -226,5 +256,5 @@ with tab4:
     fig_bar = px.bar(df_maps, x="海域", y=["燃費効率 (Gold/Oil)", "時間効率 (Gold/Sec)"],
                      barmode="group", title="海域別限界効率指標の比較",
                      color_discrete_sequence=["#38bdf8", "#f59e0b"])
-    fig_bar.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#e2e8f0")
+    fig_bar.update_layout(paper_bgcolor="#162235", plot_bgcolor="#111b2c", font_color="#ffffff")
     st.plotly_chart(fig_bar, use_container_width=True)
